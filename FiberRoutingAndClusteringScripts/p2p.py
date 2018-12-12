@@ -33,22 +33,22 @@ def main(network_nd, ff_protection, sp_protection, demands, co, pro, output_dir,
 
     if not ff_protection:
         if brownfield_duct == '#':
-            planning_result['fiber'], planning_result['duct'], a, b = spr.main(network_nd, n_nodes, 'FF', co,
+            planning_result['fiber'], planning_result['duct'], a, b, ff, c = spr.main(network_nd, n_nodes, 'FF', co,
                                                                                output_name_p2p, output_fds, pro,
                                                                                ff_protection, p2p_demands=demands)
         else:
-            planning_result['fiber'], planning_result['duct'], a, b = spr.main(network_nd, n_nodes, 'FF', co,
+            planning_result['fiber'], planning_result['duct'], a, b, ff, c = spr.main(network_nd, n_nodes, 'FF', co,
                                                                                output_name_p2p, output_fds, pro,
                                                                                ff_protection, p2p_demands=demands,
                                                                                brownfield_duct=brownfield_duct)
     else:
         if brownfield_duct == '#':
             planning_result['fiber'], planning_result['duct'], planning_result['fiber_p'], \
-            planning_result['duct_add_p'] = spr.main(network_nd, n_nodes, 'FF', co, output_name_p2p, output_fds,
+            planning_result['duct_add_p'], ff, ff_p = spr.main(network_nd, n_nodes, 'FF', co, output_name_p2p, output_fds,
                                                      pro, ff_protection, sp_protection, p2p_demands=demands)
         else:
             planning_result['fiber'], planning_result['duct'], planning_result['fiber_p'], \
-            planning_result['duct_add_p'] = spr.main(network_nd, n_nodes, 'FF', co, output_name_p2p, output_fds,
+            planning_result['duct_add_p'], ff, ff_p = spr.main(network_nd, n_nodes, 'FF', co, output_name_p2p, output_fds,
                                                      pro, ff_protection, sp_protection, p2p_demands=demands,
                                                      brownfield_duct=brownfield_duct)
 
@@ -57,6 +57,21 @@ def main(network_nd, ff_protection, sp_protection, demands, co, pro, output_dir,
     output_file_planning = os.path.join(output_dir, '{0}.txt'.format(output_name))
     f_p = open(output_file_planning, 'w')
     json.dump(planning_result, f_p)
+
+    # Save total fibers and ducts to be used as brownfield for further scenarios
+    total_fiber = os.path.join(output_fds, 'Total_fiber_{0}'.format(output_name_p2p))
+    check_exists(total_fiber)
+
+    if ff_protection:
+        arcpy.Merge_management([ff, ff_p], total_fiber)
+        arcpy.AddGeometryAttributes_management(total_fiber,'LENGTH_GEODESIC', 'METERS')
+
+    total_duct = os.path.join(output_fds, 'Total_duct_{0}'.format(output_name_p2p))
+    check_exists(total_duct)
+    arcpy.Dissolve_management(total_fiber, total_duct)
+
+    arcpy.AddGeometryAttributes_management(total_duct, 'LENGTH_GEODESIC', 'METERS')
+
     return
 
 

@@ -193,9 +193,13 @@ def main(network_nd, clustering_allocation, ff_protection, sp_protection, buildi
     else:
         arcpy.Merge_management([lmf, df, ff, ff_p], total_fiber)
 
+    arcpy.AddGeometryAttributes_management(total_fiber, 'LENGTH_GEODESIC', 'METERS')
+
     total_duct = os.path.join(output_fds, 'Total_duct_{0}'.format(output_name))
     check_exists(total_duct)
     arcpy.Dissolve_management(total_fiber, total_duct)
+
+    arcpy.AddGeometryAttributes_management(total_duct, 'LENGTH_GEODESIC', 'METERS')
 
     return
 

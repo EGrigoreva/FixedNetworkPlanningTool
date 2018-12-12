@@ -41,17 +41,14 @@ def get_ids(layer_in):
     return ids, points_id
 
 
-def main(network_nd, demands, intersections, facilities, sr, output_fds, output_name, pro, default_cutoff='#'):
+def main(network_nd, demands, intersections, facilities, sr, output_fds, output_name, pro, default_cutoff='#', lines='#'):
     # Check out the Network Analyst extension license
     arcpy.CheckOutExtension("Network")
     # Set overwriting out the files to TRUE
     arcpy.overwriteOutput = 1
 
     n_demands_in = int(arcpy.GetCount_management(demands).getOutput(0))
-    arcpy.AddMessage(n_demands_in)
     number_of_facilities_to_find = int(math.ceil(float(n_demands_in) / float(sr)))
-    arcpy.AddMessage(number_of_facilities_to_find)
-    arcpy.AddMessage(sr)
 
     n_nulls = 1
 
@@ -94,7 +91,6 @@ def main(network_nd, demands, intersections, facilities, sr, output_fds, output_
         demand_points_layer_name = subLayerNames["DemandPoints"]
         # lines_layer_name = subLayerNames["LALines"]
 
-        arcpy.AddMessage(intersections)
         # Load facilities - Intersections
         if facilities == "Nodes":
             arcpy.na.AddLocations(layer_object, facilities_layer_name, demands)
@@ -102,11 +98,18 @@ def main(network_nd, demands, intersections, facilities, sr, output_fds, output_
             if number_of_facilities_to_find <= n_demands_in:
                 arcpy.na.AddLocations(layer_object, facilities_layer_name, intersections)
                 arcpy.na.AddLocations(layer_object, facilities_layer_name, intersections)
+
+                if lines != '#':
+                    additional_facilities_middle_of_streets = os.path.join('in_memory', 'middle_points')
+                    check_exists(additional_facilities_middle_of_streets)
+                    arcpy.FeatureToPoint_management(lines, additional_facilities_middle_of_streets, 'INSIDE')
+
+                    arcpy.na.AddLocations(layer_object, facilities_layer_name, additional_facilities_middle_of_streets)
+
             else:
                 arcpy.na.AddLocations(layer_object, facilities_layer_name, intersections)
 
         # Load demands - BSs
-        arcpy.AddMessage(demands)
         arcpy.na.AddLocations(layer_object, demand_points_layer_name, demands)
 
         # Solve the location-allocation layer
@@ -141,7 +144,6 @@ def main(network_nd, demands, intersections, facilities, sr, output_fds, output_
                                                 where_clause=clause_demands)
 
         n_nulls = int(arcpy.GetCount_management(demands_sublayer).getOutput(0))
-        arcpy.AddMessage(n_nulls)
 
         number_of_facilities_to_find += 5
 

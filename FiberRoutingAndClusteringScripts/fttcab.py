@@ -21,7 +21,7 @@ def check_exists(name_in):
 
 
 ########################################################################################################################
-def main(network_nd, ff_protection, sp_protection, demands, intersections,
+def main(network_nd, lines, ff_protection, sp_protection, demands, intersections,
          co, sr_fttcab_rn, sr_fttcab_b_dsl, dsl_reach, output_dir, output_fds, output_name, pro, copper_routes=False,
          brownfield_duct='#', save_lmf_df=False, save_clusters=False):
 
@@ -48,7 +48,7 @@ def main(network_nd, ff_protection, sp_protection, demands, intersections,
     import ClusteringLocationAllocation as clst
     name_clst = output_name_dsl_build + '_loc'
     n_clusters_copper = clst.main(network_nd, demands, intersections, facilities, sr_fttcab_b_dsl, output_fds_cluster,
-                                  name_clst, pro, dsl_reach)
+                                  name_clst, pro, dsl_reach, lines)
     print(n_clusters_copper)
 
     name_onus = 'Cluster_heads_{0}'.format(name_clst)
@@ -143,9 +143,13 @@ def main(network_nd, ff_protection, sp_protection, demands, intersections,
     else:
         arcpy.Merge_management([df, ff, ff_p], total_fiber)
 
+    arcpy.AddGeometryAttributes_management(total_fiber, 'LENGTH_GEODESIC', 'METERS')
+
     total_duct = os.path.join(output_fds, 'Total_duct_{0}'.format(output_name_fiber))
     check_exists(total_duct)
     arcpy.Dissolve_management(total_fiber, total_duct)
+
+    arcpy.AddGeometryAttributes_management(total_duct, 'LENGTH_GEODESIC', 'METERS')
 
     return
 
@@ -158,29 +162,31 @@ if __name__ == '__main__':
     if not from_pycharm:
         network_nd_in = arcpy.GetParameterAsText(0)
 
-        ff_protection_in = bool(arcpy.GetParameterAsText(1))
-        sp_protection_in = bool(arcpy.GetParameterAsText(2))
+        lines_in = arcpy.GetParameterAsText(1)
 
-        sr_fttcab_b_dsl_in = int(arcpy.GetParameterAsText(3))
-        dsl_reach_in = int(arcpy.GetParameterAsText(4))
-        copper_routes_in = bool(arcpy.GetParameterAsText(5))
+        ff_protection_in = bool(arcpy.GetParameterAsText(2))
+        sp_protection_in = bool(arcpy.GetParameterAsText(3))
 
-        sr_fttcab_rn_in = int(arcpy.GetParameterAsText(6))
-        demands_in = arcpy.GetParameterAsText(7)
+        sr_fttcab_b_dsl_in = int(arcpy.GetParameterAsText(4))
+        dsl_reach_in = int(arcpy.GetParameterAsText(5))
+        copper_routes_in = bool(arcpy.GetParameterAsText(6))
 
-        intersections_in = arcpy.GetParameterAsText(8)
-        co_in = arcpy.GetParameterAsText(9)
+        sr_fttcab_rn_in = int(arcpy.GetParameterAsText(7))
+        demands_in = arcpy.GetParameterAsText(8)
 
-        save_lmf_df_in = bool(arcpy.GetParameterAsText(10))
-        save_clusters_in = bool(arcpy.GetParameterAsText(11))
+        intersections_in = arcpy.GetParameterAsText(9)
+        co_in = arcpy.GetParameterAsText(10)
 
-        brownfield_duct_in = arcpy.GetParameterAsText(12)
+        save_lmf_df_in = bool(arcpy.GetParameterAsText(11))
+        save_clusters_in = bool(arcpy.GetParameterAsText(12))
+
+        brownfield_duct_in = arcpy.GetParameterAsText(13)
         if not brownfield_duct_in:
             brownfield_duct_in = '#'
 
-        output_dir_in = arcpy.GetParameterAsText(13) #r'D:\GISworkspace\ITSplanning' #
-        output_fds_in = arcpy.GetParameterAsText(14)
-        output_name_in = arcpy.GetParameterAsText(15)  #'test' #
+        output_dir_in = arcpy.GetParameterAsText(14) #r'D:\GISworkspace\ITSplanning' #
+        output_fds_in = arcpy.GetParameterAsText(15)
+        output_name_in = arcpy.GetParameterAsText(16)  #'test' #
 
     else:
         network_nd_in = r'D:\GISworkspace\3_Demos\2_IndustryDay13072018\Topologies.gdb\Ottobrun\Ottobrun_ND'
@@ -208,6 +214,6 @@ if __name__ == '__main__':
 
     pro_in = False
 
-    main(network_nd_in, ff_protection_in, sp_protection_in, demands_in, intersections_in,
+    main(network_nd_in, lines_in, ff_protection_in, sp_protection_in, demands_in, intersections_in,
          co_in, sr_fttcab_rn_in, sr_fttcab_b_dsl_in, dsl_reach_in, output_dir_in, output_fds_in, output_name_in, pro_in,
          copper_routes_in, brownfield_duct_in, save_lmf_df_in, save_clusters_in)
