@@ -19,10 +19,14 @@ The explanation of the motivation, problem formulation and generic tool can be f
 https://youtu.be/ewtGoRcx6j8
 
 The individual demos for the tool parts:
-P2P:
-FTTB:
-FTTCAB:
-Converged planning:
+
+P2P: https://youtu.be/QACmqkzC7KI 
+
+FTTB: https://youtu.be/eofbdaK1JxU
+
+FTTCAB:https://youtu.be/ieheYNt-g64
+
+Converged planning: https://youtu.be/8hmMtVGuy8A
 
 
 *This work has received funding by the German Research Foundation (DFG) under the grant numbers MA6529/2-1 and KE1863/4-1.*
