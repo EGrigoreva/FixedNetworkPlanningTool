@@ -68,40 +68,47 @@ def main(network_nd, clustering_allocation, ff_protection, sp_protection, demand
 
     # LMF
     if brownfield_duct == '#':
-        planning_result['lmf'], planning_result['lm_d'], a, b, lmf, c = spr.main(network_nd, n_clusters, 'LMF', co, name_clst,
-                                                                         output_fds, pro, save_lmf_df=save_lmf_df,
-                                                                         save_clusters=save_clusters)
+        planning_result['lmf'], planning_result['lm_d'], a, b, lmf, c = spr.main(network_nd, n_clusters, 'LMF', co,
+                                                                                 name_clst,output_fds, pro,
+                                                                                 brownfield_duct='#',
+                                                                                 save_lmf_df=save_lmf_df,
+                                                                                 save_clusters=save_clusters)
     else:
-        planning_result['lmf'], planning_result['lm_d'], a, b, lmf, c = spr.main(network_nd, n_clusters, 'LMF', co, name_clst,
-                                                                         output_fds, pro,
-                                                                         brownfield_duct=brownfield_duct,
-                                                                         save_lmf_df=save_lmf_df,
-                                                                         save_clusters=save_clusters)
+        planning_result['lmf'], planning_result['lm_d'], a, b, lmf, c = spr.main(network_nd, n_clusters, 'LMF', co,
+                                                                                 name_clst, output_fds, pro,
+                                                                                 brownfield_duct=brownfield_duct,
+                                                                                 save_lmf_df=save_lmf_df,
+                                                                                 save_clusters=save_clusters)
     # FF
     if not ff_protection:
         if brownfield_duct == '#':
-            planning_result['ff'], planning_result['f_d'], a, b, ff, c = spr.main(network_nd, n_clusters, 'FF', co, name_clst,
-                                                                           output_fds, pro, '#',
-                                                                           save_clusters=save_clusters)
+
+            planning_result['ff'], planning_result['f_d'], a, b, ff, c = spr.main(network_nd, n_clusters, 'FF', co,
+                                                                                  name_clst, output_fds, pro,
+                                                                                  brownfield_duct='#',
+                                                                                  save_clusters=save_clusters)
         else:
-            planning_result['ff'], planning_result['f_d'], a, b, ff, c = spr.main(network_nd, n_clusters, 'FF', co, name_clst,
-                                                                           output_fds, pro, '#',
-                                                                           brownfield_duct=brownfield_duct,
-                                                                           save_clusters=save_clusters)
+            planning_result['ff'], planning_result['f_d'], a, b, ff, c = spr.main(network_nd, n_clusters, 'FF', co,
+                                                                                  name_clst,output_fds, pro,
+                                                                                  brownfield_duct=brownfield_duct,
+                                                                                  save_clusters=save_clusters)
     else:
         if brownfield_duct == '#':
             planning_result['ff'], planning_result['f_d'], \
-            planning_result['ff_sp_p'], planning_result['f_d_add_p'], ff, ff_p = spr.main(network_nd, n_clusters, 'FF', co,
-                                                                                name_clst, output_fds, pro,
-                                                                                ff_protection, sp_protection,
-                                                                                save_clusters=save_clusters)
+            planning_result['ff_sp_p'], planning_result['f_d_add_p'], ff, ff_p = spr.main(network_nd, n_clusters, 'FF',
+                                                                                          co,
+                                                                                          name_clst, output_fds, pro,
+                                                                                          ff_protection=ff_protection,
+                                                                                          sp_protection_in=sp_protection,
+                                                                                          save_clusters=save_clusters)
         else:
             planning_result['ff'], planning_result['f_d'], \
-            planning_result['ff_sp_p'], planning_result['f_d_add_p'], ff, ff_p = spr.main(network_nd, n_clusters, 'FF', co,
-                                                                                name_clst, output_fds, pro,
-                                                                                ff_protection, sp_protection,
-                                                                                brownfield_duct=brownfield_duct,
-                                                                                save_clusters=save_clusters)
+            planning_result['ff_sp_p'], planning_result['f_d_add_p'], ff, ff_p = spr.main(network_nd, n_clusters, 'FF',
+                                                                                          co, name_clst, output_fds,
+                                                                                          pro, ff_protection=ff_protection,
+                                                                                          sp_protection_in=sp_protection,
+                                                                                          brownfield_duct=brownfield_duct,
+                                                                                          save_clusters=save_clusters)
 
     arcpy.AddMessage(planning_result)
 
